@@ -29,7 +29,7 @@ from scipy.stats import sigmaclip
 
 plt.close('all')
 
-
+#Create a Photimage object containing Header Information and Measured Flux
 class Photimage():
     
     def __init__(self,filename,groupid,sky_coord,ja200_coord):
@@ -93,7 +93,7 @@ class Photimage():
         else:
             self.sub = 'Not'
 
-        
+    #Get the Supernova Coordinates    
     def xy(self):
         hpc_frame = wcs_to_celestial_frame(self.wcs)
         skycoord =  SkyCoord(self.sky_coord, frame=hpc_frame, unit=(u.hourangle, u.deg))
@@ -102,7 +102,8 @@ class Photimage():
         y =   int((coords[0])[0])
         x =   int((coords[0])[1])
         return(x,y)
-           
+     
+    #Measure Flux Counts using PSF Photometry
     def Flux(self,x,y):
         x = int(x)
         y = int(y)
@@ -150,7 +151,7 @@ class Photimage():
         flux_unc = flux_unc/flux_counts
         return(flux_counts,flux_unc)
 
-        
+    #Retrieve Magnitudes of Reference Stars from Catalogues    
     def Mags(self):
 
         if self.Filter == 'B' or self.Filter == 'V':
@@ -202,7 +203,7 @@ class Photimage():
                     df2.update(new_6)
         return(df2)    
         
-
+#Calculate the Zero point of the image using reference star magnitudes
 def ZP(ob):
     colour_terms = pd.read_csv('/Users/eleonoraparrag/Documents/Python/Photometry/Telescopes.csv')
     df2 = ob.Mags()
@@ -258,18 +259,22 @@ def ZP(ob):
         return(0)
     else:
         return(zpsum/n)
-
+      
+#Calculate Magnitude
 def magnitude(counts,exposure):
     mag =  2.5*np.log10(counts/exposure)
     return(mag)
 
+#Calculate errors
 def error(skyerror):
     err = np.sqrt(((2.5/np.log(10)) * np.sqrt(skyerror))**2 + 0.03**2 + 0.011**2)
     return(err)
- 
+
+#Assemble Object
 def Return(filename,groupid,sky_coord,ja200_coord,cutoff):
     sub = 0
     ob = Photimage(filename,groupid,sky_coord,ja200_coord) 
+    #Mark template subtracted object. Reference stars cannot be measured here so set ZP = 0
     if ob.sub == 'Subtracted': 
         sub=1
         zp = 0
@@ -279,12 +284,14 @@ def Return(filename,groupid,sky_coord,ja200_coord,cutoff):
             return(0,0,0,0,0,0)
     x,y = ob.xy()
     
+    #Cutoff Logic
     if cutoff is not '' and int(ob.MJD) > int(cutoff) and sub == 0:
         counts,err,mg = 0,0,1.0
         
     else:
         counts,err = ob.Flux(x,y)
         if counts == 0:
+            #Try different PSF parameters if the fit fails
             ob.limit = ob.limit - 1
             ob.sigma_psf = ob.sigma_psf - 0.8
             counts,err = ob.Flux(x,y)
