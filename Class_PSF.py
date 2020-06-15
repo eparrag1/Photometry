@@ -205,7 +205,7 @@ class Photimage():
         
 #Calculate the Zero point of the image using reference star magnitudes
 def ZP(ob):
-    colour_terms = pd.read_csv('/Users/eleonoraparrag/Documents/Python/Photometry/Telescopes.csv')
+    colour_terms = pd.read_csv('Telescopes.csv')
     df2 = ob.Mags()
     zpsum = 0
     n = 0
