@@ -267,7 +267,7 @@ def error(skyerror):
     err = np.sqrt(((2.5/np.log(10)) * np.sqrt(skyerror))**2 + 0.03**2 + 0.011**2)
     return(err)
  
-def Return(filename,groupid,sky_coord,ja200_coord,cutoff=None):
+def Return(filename,groupid,sky_coord,ja200_coord,cutoff):
     sub = 0
     ob = Photimage(filename,groupid,sky_coord,ja200_coord) 
     if ob.sub == 'Subtracted': 
@@ -279,39 +279,18 @@ def Return(filename,groupid,sky_coord,ja200_coord,cutoff=None):
             return(0,0,0,0,0,0)
     x,y = ob.xy()
     
-    if cutoff is not None and int(ob.MJD) > int(cutoff) and sub == 0:
-        counts,err,mg = 0,0,1
+    if cutoff is not '' and int(ob.MJD) > int(cutoff) and sub == 0:
+        counts,err,mg = 0,0,1.0
         
     else:
         counts,err = ob.Flux(x,y)
-        
-        
         if counts == 0:
             ob.limit = ob.limit - 1
             ob.sigma_psf = ob.sigma_psf - 0.8
             counts,err = ob.Flux(x,y)
             if counts == 0:
                 return(0,0,0,0,0,0)
-        """
-        if counts == 0:
-            ob.limit = ob.limit - 1
-            counts,err = ob.Flux(x,y)
-            if counts == 0:
-                ob.limit = ob.limit - 1
-                ob.sigma_psf = ob.sigma_psf - 0.4
-                counts,err = ob.Flux(x,y)
-                if counts == 0:
-                    ob.limit = ob.limit - 1
-                    ob.sigma_psf = ob.sigma_psf - 0.8
-                    counts,err = ob.Flux(x,y)
-                    if counts == 0:
-                        return(0,0,0,0,0,0)
-        """
-      
         mg = magnitude(counts,ob.Exposure)
         err = error(err)
     filter_label = ob.filter_label
     return(ob.MJD,mg,zp,err,filter_label,sub)
-
-
-print(Return('/Users/eleonoraparrag/Documents/Python/LCO_combine/ORIG/sub_V_0708.fits', 'SN2019hcc', '21:00:20.930 -21:20:36.06', '315.08720833 -21.34335',58670))
