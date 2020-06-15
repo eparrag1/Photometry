@@ -38,5 +38,9 @@ The output will be an errobar scatter plot displaying the figure, 'Light_curve.p
 'Photometry_data.xlsx' has substituted numbers for the filters, as below:
 B: 1, V:2, gp:3, ip:4, rp: 5, SDSS-I: 6, SDSS-R: 7, SDSS-Z: 8, SDSS-G: 9
 
-# A quick note on catalogues
+# Custom
+*Catalogues: *
 The catalogues in use 'II/336' for B and V filters, and 'II/349' for griz, from Vizier Pan-STARSS. It is possible that the location of your object is not covered by these catalogues. Currently nothing is implemented to handle this, therefore the workaround would be to refer to the Vizier database for appropriate catalogues and manually replace these in Class_PSF.py.
+
+*PSF parameter fine-tuning: *
+The PSF fitting using a gaussian PSF, the key parameters being the limit (in standard deviations) and the sigma_psf (defining the expected size of the object). The defaults values for both are 3, which in most cases is suitable. Fine-tuning of these parameters and additional logic can be done on a case-by-case basis to potentially improve results, adjustable in the function Return() in Class_PSF.py
