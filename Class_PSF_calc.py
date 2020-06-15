@@ -25,9 +25,9 @@ from photutils.background import MMMBackground, MADStdBackgroundRMS
 from astropy.modeling.fitting import LevMarLSQFitter
 from astropy.stats import gaussian_sigma_to_fwhm
 from scipy.stats import sigmaclip
-import operator
 
 import Class_PSF as CP
+
 plt.close('all')
 
 
@@ -36,10 +36,8 @@ def fitting(directory, groupid, sky_coord, ja200_coord, cutoff = None):
     results_table = Table({'MJD':[],'Filter':[],'Mag':[],'Error':[],'ZP':[],'SUB':[]})
     for filename in os.listdir(directory):
         if filename != '.DS_Store':
-            MJD,mg,zp,err,filter_,sub = CP.Return(directory+filename,groupid,sky_coord,(ja200_coord[0],ja200_coord[1]),cutoff)
-            print('MAG',mg)
+            MJD,mg,zp,err,filter_,sub = CP.Return(directory+'/'+filename,groupid,sky_coord,(ja200_coord[0],ja200_coord[1]),cutoff)
             if isinstance(mg, float) and mg != 0.0:
-                print('yes')
                 pass
             else:
                 continue
@@ -53,23 +51,21 @@ def fitting(directory, groupid, sky_coord, ja200_coord, cutoff = None):
     indices = (df[df['ZP'] == 0].index.to_numpy())
     
     for i in indices:
-        print(df['MJD'][i])
-        print(df['Filter'][i])
-
         zp = np.array(df.loc[(df['MJD'] == df['MJD'][i])&(df['Filter'] == df['Filter'][i])&(df['ZP'] != 0)]['ZP'])
-        zp_idx = np.array(df[(df['MJD'] == df['MJD'][i])&(df['Filter'] == df['Filter'][i])&(df['ZP'] != 0)].index.to_numpy())
+        zp_idx = (df[(df['MJD'] == df['MJD'][i])&(df['Filter'] == df['Filter'][i])&(df['ZP'] != 0)].index)
         if len(zp_idx) == 0:
-            print(zp)
-            print('drop')
             df=df.drop([i])
         else:   
             df=df.drop([zp_idx[0]])
         df['ZP'][i] = zp
      
-    if cutoff is not None:        
+    if cutoff is not '':        
         df = df[(df['MJD'] < 58670) | (df['SUB'] == 1)]
     df['Mag'] = df['ZP'] - df['Mag']
     results_table = df
+    
+    results_table = results_table.drop(columns = ['SUB'])
+    results_table.to_excel("Photometry_data.xlsx",sheet_name='Sheet_name_1') 
     
     B = results_table[results_table['Filter'] == 1]
     plt.errorbar(B['MJD'],B['Mag'], yerr = B['Error'], fmt = 'o')
@@ -110,15 +106,8 @@ def fitting(directory, groupid, sky_coord, ja200_coord, cutoff = None):
     ax = scatter.axes
     ax.invert_yaxis()
     plt.legend()
+    plt.savefig('Light_curve.png')
     plt.show()
-    
-    plt.savefig('Light_curve')
-    
-    
-#fitting('/Users/eleonoraparrag/documents/Python/LCO_combine/ORIG/', 58670)
-#sky_coord = '21:00:20.930 -21:20:36.06'
-#ja200_coord =(315.08720833,-21.34335)
-
 
 directory = input('Which directory am I looking in? ')
 cutoff = input('If you are using template subtracted images, would you like to clear other data beyond a cutoff? (Optional) ')
@@ -126,10 +115,3 @@ groupid = input('Please enter the object name or groupid as in the fits header '
 sky_coord = input('Please enter the Galactic coordinates in format "RA DEC" ')
 ja200_coord = input('Please enter the ja200 coordinates in "RA DEC" ')
 fitting(directory,groupid,sky_coord,ja200_coord.split(),cutoff)
-
-
-
-#sky_coord = '02:26:18.55 -09:50:09.0'
-#ja200_coord = (36.57729167, -9.83583333)
-#/Users/eleonoraparrag/documents/Python/SN2019muj/SN_other/'
-#2.46. and it's lookin fixed!
