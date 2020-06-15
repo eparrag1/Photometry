@@ -37,3 +37,6 @@ The output will be an errobar scatter plot displaying the figure, 'Light_curve.p
 
 'Photometry_data.xlsx' has substituted numbers for the filters, as below:
 B: 1, V:2, gp:3, ip:4, rp: 5, SDSS-I: 6, SDSS-R: 7, SDSS-Z: 8, SDSS-G: 9
+
+# A quick note on catalogs
+The catalogues in use 'II/336' for B and V filters, and 'II/349' for griz, from Vizier Pan-STARSS. It is possible that the location of your object is not covered by these catalogues. Currently nothing is implemented to handle this, therefore the workaround would be to refer to the Vizier database for appropriate catalogues and manually replace these in the code.
