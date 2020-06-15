@@ -5,7 +5,9 @@ How to run:
 
 This is to be run using Python 3. See Requirements.txt for the necessary packages.
 
-Telescopes.csv contains the colour terms for the telescopes used to take the images. The default is for Las Cumbres Observatory and the Liverpool Telescope. If any of your images were taken by a telescope not contained in this file, you will need to add this in.
+This should be executed from the location where all above scripts are stored, including Telescopes.csv.
+
+Telescopes.csv contains the colour terms for the telescopes used to take the images. The default is for Las Cumbres Observatory and the Liverpool Telescope. If any of your images were taken by a telescope not contained in this file, you will need to add this in. 
 
 The filters this code works with are B,V,G,R,I,Z.
 
@@ -33,7 +35,7 @@ Enter the ja200 coordinates of the object in format '315.08720833 -21.34335'
 
 # Output
 
-The output will be an errobar scatter plot displaying the figure, 'Light_curve.png', and an excel spreadsheet containing the data, 'Photometry_data.xlsx'.
+The output will be an errobar scatter plot displaying the figure, 'Light_curve.png', and an excel spreadsheet containing the data, 'Photometry_data.xlsx'. These will be saved to the execution location.
 
 'Photometry_data.xlsx' has substituted numbers for the filters, as below:
 B: 1, V:2, gp:3, ip:4, rp: 5, SDSS-I: 6, SDSS-R: 7, SDSS-Z: 8, SDSS-G: 9
