@@ -35,3 +35,5 @@ Enter the ja200 coordinates of the object in format '315.08720833 -21.34335'
 
 The output will be an errobar scatter plot displaying the figure, 'Light_curve.png', and an excel spreadsheet containing the data, 'Photometry_data.xlsx'.
 
+'Photometry_data.xlsx' has substituted numbers for the filters, as below:
+B: 1, V:2, gp:3, ip:4, rp: 5, SDSS-I: 6, SDSS-R: 7, SDSS-Z: 8, SDSS-G: 9
