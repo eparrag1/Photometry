@@ -13,6 +13,8 @@ The filters this code works with are B,V,G,R,I,Z.
 
 To execute the code run the script 'Class_PSF_calc.py'.
 
+Run times are dependent on the number of images, but typically less than 5 minutes.
+
 # Input
 
 You will then be prompted for the following information:
