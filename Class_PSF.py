@@ -292,11 +292,16 @@ def Return(filename,groupid,sky_coord,ja200_coord,cutoff):
         counts,err = ob.Flux(x,y)
         if counts == 0:
             #Try different PSF parameters if the fit fails
-            ob.limit = ob.limit - 1
-            ob.sigma_psf = ob.sigma_psf - 0.8
+            ob.limit = ob.limit - 0.5
+            ob.sigma_psf = ob.sigma_psf+ 0.5
             counts,err = ob.Flux(x,y)
             if counts == 0:
-                return(0,0,0,0,0,0)
+                ob.limit = ob.limit 
+                ob.sigma_psf = ob.sigma_psf - 0.5
+                counts,err = ob.Flux(x,y)
+                if counts == 0:
+                    return(0,0,0,0,0,0)
+                  
         mg = magnitude(counts,ob.Exposure)
         err = error(err)
     filter_label = ob.filter_label
