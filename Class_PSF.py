@@ -29,7 +29,7 @@ from scipy.stats import sigmaclip
 
 plt.close('all')
 
-#Create a Photimage object containing Header Information and Measured Flux
+
 class Photimage():
     
     def __init__(self,filename,groupid,sky_coord,ja200_coord):
@@ -60,6 +60,7 @@ class Photimage():
             self.readnoise = self.hdr['READNOIS']
         self.gain = self.hdr['GAIN']
         self.wcs = WCS(self.hdr)
+        self.filename=filename
         
         if self.Filter == 'B':
             self.filter_label=1
@@ -93,7 +94,7 @@ class Photimage():
         else:
             self.sub = 'Not'
 
-    #Get the Supernova Coordinates    
+        
     def xy(self):
         hpc_frame = wcs_to_celestial_frame(self.wcs)
         skycoord =  SkyCoord(self.sky_coord, frame=hpc_frame, unit=(u.hourangle, u.deg))
@@ -102,8 +103,7 @@ class Photimage():
         y =   int((coords[0])[0])
         x =   int((coords[0])[1])
         return(x,y)
-     
-    #Measure Flux Counts using PSF Photometry
+           
     def Flux(self,x,y):
         x = int(x)
         y = int(y)
@@ -129,7 +129,25 @@ class Photimage():
         
 
         
-        result_tab = photometry(image=data)    
+        result_tab = photometry(image=data)   
+        
+        """
+        if plot == 1:
+            residual_image = photometry.get_residual_image()
+            print(result_tab['x_fit','y_fit'])
+            plt.figure(self.filename+' data')
+            plt.imshow(data, cmap='viridis',
+                       aspect=1, interpolation='nearest', origin='lower')
+            plt.show()
+            plt.figure(self.filename+' residual')
+            plt.imshow(residual_image, cmap='viridis',
+                       aspect=1, interpolation='nearest', origin='lower')
+            plt.show()
+            plt.figure(self.filename+' PSF')
+            plt.imshow(data-residual_image, cmap='viridis',
+                       aspect=1, interpolation='nearest', origin='lower')
+            plt.show()
+        """
         
         if len(result_tab) > 5:
             return(0,0) 
@@ -138,7 +156,8 @@ class Photimage():
             return(0,0) 
         result_tab['Minus'] = np.zeros(len(result_tab))
         for i in range(len(result_tab)):
-            if 20.5 < result_tab['x_fit'][i] < 28.5 and 20.5 < result_tab['y_fit'][i] < 28.5:
+            if 18.5 < result_tab['x_fit'][i] < 28.5 and 18.5 < result_tab['y_fit'][i] < 28.5:
+            #if 15 < result_tab['x_fit'][i] < 25 and 15 < result_tab['y_fit'][i] < 25:
                 result_tab['Minus'][i] = 1
             else:
                 result_tab['Minus'][i] = 0
@@ -151,7 +170,7 @@ class Photimage():
         flux_unc = flux_unc/flux_counts
         return(flux_counts,flux_unc)
 
-    #Retrieve Magnitudes of Reference Stars from Catalogues    
+        
     def Mags(self):
 
         if self.Filter == 'B' or self.Filter == 'V':
@@ -203,7 +222,7 @@ class Photimage():
                     df2.update(new_6)
         return(df2)    
         
-#Calculate the Zero point of the image using reference star magnitudes
+
 def ZP(ob):
     colour_terms = pd.read_csv('Telescopes.csv')
     df2 = ob.Mags()
@@ -259,22 +278,18 @@ def ZP(ob):
         return(0)
     else:
         return(zpsum/n)
-      
-#Calculate Magnitude
+
 def magnitude(counts,exposure):
     mag =  2.5*np.log10(counts/exposure)
     return(mag)
 
-#Calculate errors
 def error(skyerror):
     err = np.sqrt(((2.5/np.log(10)) * np.sqrt(skyerror))**2 + 0.03**2 + 0.011**2)
     return(err)
-
-#Assemble Object
+ 
 def Return(filename,groupid,sky_coord,ja200_coord,cutoff):
     sub = 0
     ob = Photimage(filename,groupid,sky_coord,ja200_coord) 
-    #Mark template subtracted object. Reference stars cannot be measured here so set ZP = 0
     if ob.sub == 'Subtracted': 
         sub=1
         zp = 0
@@ -284,14 +299,14 @@ def Return(filename,groupid,sky_coord,ja200_coord,cutoff):
             return(0,0,0,0,0,0)
     x,y = ob.xy()
     
-    #Cutoff Logic
     if cutoff is not '' and int(ob.MJD) > int(cutoff) and sub == 0:
         counts,err,mg = 0,0,1.0
         
     else:
         counts,err = ob.Flux(x,y)
+        
+        
         if counts == 0:
-            #Try different PSF parameters if the fit fails
             ob.limit = ob.limit - 0.5
             ob.sigma_psf = ob.sigma_psf+ 0.5
             counts,err = ob.Flux(x,y)
@@ -301,8 +316,13 @@ def Return(filename,groupid,sky_coord,ja200_coord,cutoff):
                 counts,err = ob.Flux(x,y)
                 if counts == 0:
                     return(0,0,0,0,0,0)
-                  
+        
+
+      
         mg = magnitude(counts,ob.Exposure)
         err = error(err)
     filter_label = ob.filter_label
     return(ob.MJD,mg,zp,err,filter_label,sub)
+
+
+#print(Return('/Users/eleonoraparrag/Documents/Python/LCO_combine/ORIG/sub_gp_0708.fits', 'SN2019hcc', '21:00:20.930 -21:20:36.06', '315.08720833 -21.34335',58670))

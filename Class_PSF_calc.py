@@ -37,21 +37,23 @@ def fitting(directory, groupid, sky_coord, ja200_coord, cutoff = None):
     for filename in os.listdir(directory):
         if filename != '.DS_Store':
             MJD,mg,zp,err,filter_,sub = CP.Return(directory+'/'+filename,groupid,sky_coord,(ja200_coord[0],ja200_coord[1]),cutoff)
-            #Check a valid magnitude was measured
             if isinstance(mg, float) and mg != 0.0:
                 pass
             else:
                 continue
             results_table.add_row([MJD,filter_,mg,err,zp,sub])
-  
-    #Aggregate if multiple images require stacking
+    
+    
     results_table = results_table.group_by(['MJD','Filter','SUB'])
     results_table = results_table.groups.aggregate(np.mean)
     
+    
+    
+    
     df = results_table.to_pandas()
-  
-    #For subtracted images (sub=1), retrieve ZPs from original images (sub=0) for matching night and filter
+
     indices = (df[df['ZP'] == 0].index.to_numpy())
+    
     for i in indices:
         zp = np.array(df.loc[(df['MJD'] == df['MJD'][i])&(df['Filter'] == df['Filter'][i])&(df['ZP'] != 0)]['ZP'])
         zp_idx = (df[(df['MJD'] == df['MJD'][i])&(df['Filter'] == df['Filter'][i])&(df['ZP'] != 0)].index)
@@ -62,33 +64,34 @@ def fitting(directory, groupid, sky_coord, ja200_coord, cutoff = None):
         df['ZP'][i] = zp
      
     if cutoff is not '':        
-        df = df[(df['MJD'] < 58670) | (df['SUB'] == 1)]
-        
+        df = df[(df['MJD'] < int(cutoff)) | (df['SUB'] == 1)]
     df['Mag'] = df['ZP'] - df['Mag']
-    results_table = df 
+    results_table = df
+    
     results_table = results_table.drop(columns = ['SUB'])
     results_table.to_excel("Photometry_data.xlsx",sheet_name='Sheet_name_1') 
     
-    #Plotting
+    plt.figure()
+    
     B = results_table[results_table['Filter'] == 1]
     plt.errorbar(B['MJD'],B['Mag'], yerr = B['Error'], fmt = 'o')
     scatter = plt.scatter(B['MJD'],B['Mag'],label = 'B')
-    
+       
     V = results_table[results_table['Filter'] == 2]
     plt.errorbar(V['MJD'],V['Mag'], yerr = V['Error'], fmt = 'o')
     plt.scatter(V['MJD'],V['Mag'],label = 'V')
-    
+      
     gp = results_table[results_table['Filter'] == 3]
     plt.errorbar(gp['MJD'],gp['Mag'], yerr = gp['Error'], fmt = 'o')
     plt.scatter(gp['MJD'],gp['Mag'],label = 'gp')
-    
+      
     ip = results_table[results_table['Filter'] == 4]
     plt.errorbar(ip['MJD'],ip['Mag'], yerr = ip['Error'], fmt = 'o')
     plt.scatter(ip['MJD'],ip['Mag'],label = 'ip')
-    
+      
     rp = results_table[results_table['Filter'] == 5]
     plt.errorbar(rp['MJD'],rp['Mag'], yerr = rp['Error'], fmt = 'o')
-    plt.scatter(rp['MJD'],rp['Mag'],label = 'rp')
+    plt.scatter(rp['MJD'],rp['Mag'],label = 'rp')   
     
     I = results_table[results_table['Filter'] == 6]
     plt.errorbar(I['MJD'],I['Mag'], yerr = I['Error'], fmt = 'o')
@@ -96,7 +99,7 @@ def fitting(directory, groupid, sky_coord, ja200_coord, cutoff = None):
     
     R = results_table[results_table['Filter'] == 7]
     plt.errorbar(R['MJD'],R['Mag'], yerr = R['Error'], fmt = 'o')
-    plt.scatter(R['MJD'],R['Mag'],label = 'SDSS-R')
+    plt.scatter(R['MJD'],R['Mag'],label = 'SDSS-R')   
     
     Z = results_table[results_table['Filter'] == 8]
     plt.errorbar(Z['MJD'],Z['Mag'], yerr = Z['Error'], fmt = 'o')
@@ -105,12 +108,27 @@ def fitting(directory, groupid, sky_coord, ja200_coord, cutoff = None):
     G = results_table[results_table['Filter'] == 9]
     plt.errorbar(G['MJD'],G['Mag'], yerr = G['Error'], fmt = 'o')
     plt.scatter(G['MJD'],G['Mag'],label = 'SDSS-G')
-   
+    
+    
     ax = scatter.axes
     ax.invert_yaxis()
     plt.legend()
     plt.savefig('Light_curve.png')
     plt.show()
+
+"""
+#Plot together with ATLAS and SWIFT? (bit messy)
+import SWIFT
+import ATLAS   
+ATLAS.ATLAS(full)   
+SWIFT.plot(bmag3,'bmag')
+SWIFT.plot(m2mag3,'m2mag') 
+"""
+# 
+#fitting('/Users/eleonoraparrag/documents/Python/LCO_combine/ORIG/', 58670)
+#sky_coord = '21:00:20.930 -21:20:36.06'
+#ja200_coord =315.08720833 -21.34335
+
 
 directory = input('Which directory am I looking in? ')
 cutoff = input('If you are using template subtracted images, would you like to clear other data beyond a cutoff? (Optional) ')
@@ -118,3 +136,9 @@ groupid = input('Please enter the object name or groupid as in the fits header '
 sky_coord = input('Please enter the Galactic coordinates in format "RA DEC" ')
 ja200_coord = input('Please enter the ja200 coordinates in "RA DEC" ')
 fitting(directory,groupid,sky_coord,ja200_coord.split(),cutoff)
+
+
+
+#sky_coord = '02:26:18.55 -09:50:09.0'
+#ja200_coord = (36.57729167, -9.83583333)
+#/Users/eleonoraparrag/documents/Python/SN2019muj/SN_other/'
