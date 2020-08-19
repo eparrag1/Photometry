@@ -343,118 +343,90 @@ def plotter(x,y,add,phot,crop,crop_no,label,color,z,rv = 3.1,av = 0.19):
     return(T)
 
 
-
-
-def excel(name,add,z,av,halpha,color,crop,crop_no):
-    excel = '/Users/eleonoraparrag/Documents/Spectroscopy/Other_spectra/SN.xlsx'
-    data_xls = pd.read_excel(excel, name, skiprows = 0, comment='#') 
-    data_xls.columns = ['MJD','Flux']
-    x,y = np.array(data_xls['MJD']),np.array(data_xls['Flux'])
-    if halpha == 'halpha':
-        a = np.where((x<9000) & (x>5900))
-        x = x[a]
-        y = y[a]
-    y = moving_average(av,y)
-    plotter(x,y,add,[],crop,crop_no,name,color,z)
-    return()
-
-def excel_II(name,add,color,z,av,pre,halpha):
-    #excel = '/Users/eleonoraparrag/Documents/Spectroscopy/moderate_II/moderate.xlsx'
-    excel = '/Users/eleonoraparrag/Documents/Spectroscopy/Spreadsheets/SN_compare.xlsx'
-    data_xls = pd.read_excel(excel, name, skiprows = 0, comment='#') 
-    data_xls.columns = ['Wav','Flux']
-    x,y = np.array(data_xls['Wav']),np.array(data_xls['Flux'])
-    if halpha == 'halpha':
-        a = np.where((x<7600) & (x>5800))
-        x = x[a]
-        y = y[a]
-    y = moving_average(av,y)
-    plotter(x,y,add,[],'pre',pre,name,color,z)
-    return()
-
 if __name__ == '__main__':
+    
  
     
-    """
-    #O II LINES COMPARISON FIGURE
-    plt.figure('Display Early')
-    excel_II('Early_16bad',-27.5,'tab:brown',0.247,5,100,'')
-    excel_II('PTF12dam+6',5,'teal',0.1075,0,0,'')
-    excel_II('SN2015bn-30',4.5,'darkred',0.1136,0,0,'')
-    excel_II('SN2015bn+8',4,'darkred',0.1136,0,0,'')
-    excel_II('SN2010kd-21',3.5,'darkgreen',0.1,0,0,'')
-    excel_II('SN2010kd+5',4,'darkgreen',0.1,0,0,'')
-    excel_II('LSQ14mo+2',5.3,'darkslateblue',0.253,0,0,'')
-    x,y = spectra_plot('NTT_20190609',0,'none','no')
-    T = plotter(x,y,-36.2,phot0609,'none',0,'2019hcc','black',0.044)
-    excel_II('Early_2014G',-2.2,'tab:red',0.0039,5,100,'')
-    excel_II('Early_2010aj',2.5,'tab:blue',0.0206,5,200,'')
-    excel_II('Early_2013ej',-5,'tab:green',0.002192	,5,100,'') 
-    excel_II('Early_2008fq',-0.5,'tab:purple',0.01062008,5,100,'')
+    plt.figure('H-alpha blueward peak?')
     
+    data = np.genfromtxt('/Users/eleonoraparrag/Documents/Spectroscopy/2019hcc_20190621_SOAR.txt', dtype=None)
+    x =  data[:,0]
+    y =  data[:,1]
+    a = np.where((x<5300) & (x>4600))
+    x = x[a]
+    y = y[a]
+    y = moving_average(5,y)
+    T = plotter(x,y,0,phot0621,'',0,'2019/06/21','black',0.044)
 
-    plt.axvline(x=4223,linewidth=0.75,linestyle='dashed')
-    plt.axvline(x=4327,linewidth=0.75,linestyle='dashed')
-    plt.axvline(x=4431,linewidth=0.75,linestyle='dashed')
-    plt.axvline(x=4584,linewidth=0.75,linestyle='dashed')
-
-
-    
-    red_patch = mpatches.Patch(color='red', label='SN-II')
-    blue_patch = mpatches.Patch(color='blue', label='SLSN')
-    plt.legend(handles=[red_patch,blue_patch])
-    plt.show()
-    
-    """
-    
-    """
-    #SUPERNOVA COMPARISON FIGURE
-    plt.figure('Display')
     x,y = spectra_plot('NTT_20190701',0,'none','no')
-    excel_II('SN2010aj',1,'',0.0206,5,100,'')
-    excel_II('SN2009dd',0.5,'',0.0034,0,100,'')
-    excel_II('SN2013ej',0,'',0.002192	,5,100,'')
-    T = plotter(x,y,-0.65,phot0701,'post',600,'2019hcc','black',0.044)
-    excel_II('SN2014G',-1,'',0.0039,5,100,'')
-    excel_II('SN2008fq',-1.65,'',0.01062008,5,100,'')
-    excel('iPTF16bad_2',-2.6,0.247,15,'','','pre',600)
-    excel('iPTF13ehe_2',-3.2,0.33,25,'','','pre',600)
+    a = np.where((x<5300) & (x>4600))
+    x = x[a]
+    y = y[a]
+    T = plotter(x,y,0,phot0701,'',0,'2019/07/01','black',0.044)
+    
+    x,y = spectra_plot('NTT_20190725_6',0,'none','no')
+    a = np.where((x<5300) & (x>4600))
+    x = x[a]
+    y = y[a]
+    y = moving_average(3,y)
+    T = plotter(x,y,0,phot0701,'',0,'2019/07/25','black',0.044)
+
+    x,y = spectra_plot('Extended_background/NTT_20190822',0,'none','no')
+    a = np.where((x<5300) & (x>4600))
+    x = x[a]
+    y = y[a]
+    y = moving_average(5,y)
+    T = plotter(x,y,0.5,phot0701,'',0,'2019/08/22','black',0.044)
     
     
-    
-    red_patch = mpatches.Patch(color='red', label='SN-II')
-    blue_patch = mpatches.Patch(color='blue', label='SLSN')
-    plt.legend(handles=[red_patch,blue_patch])
+    x,y = spectra_plot('NTT_20191127_2',0,'none','no')
+    a = np.where((x<5300) & (x>4600))
+    x = x[a]
+    y = y[a]
+    y = moving_average(3,y)
+    T = plotter(x,y,0,[],'',0,'2019/11/27','black',0.044)
+    #plt.legend()
     plt.show()
-    """
     
     
-    """
-    #HALPHA SUPERNOVA COMPARISON FIGURE
-    plt.figure('H-alpha')
+    
+    plt.figure('H-beta blueward peak?')
+    
+    data = np.genfromtxt('/Users/eleonoraparrag/Documents/Spectroscopy/2019hcc_20190621_SOAR.txt', dtype=None)
+    x =  data[:,0]
+    y =  data[:,1]
+    a = np.where((x<7600) & (x>6000))
+    x = x[a]
+    y = y[a]
+    y = moving_average(5,y)
+    T = plotter(x,y,0,phot0621,'',0,'2019/06/21','black',0.044)
+
     x,y = spectra_plot('NTT_20190701',0,'none','no')
     a = np.where((x<7600) & (x>6000))
     x = x[a]
     y = y[a]
-    excel_II('SN2010aj',-0.6,'',0.0206,0,100,'halpha')
-    excel_II('SN2009dd_2',0,'',0.0034,0,0,'halpha')
+    T = plotter(x,y,0,phot0701,'',0,'2019/07/01','black',0.044)
     
-    excel_II('SN2013ej',0.5,'',0.002192	,0,100,'halpha')
-    T = plotter(x,y,1,phot0701,'',0.34,'2019hcc','black',0.044)
-    excel_II('SN2014G',0.65,'',0.0039,0,100,'halpha')
-    excel_II('SN2008fq',0.25,'',0.01062008,0,0,'halpha')
-    excel('iPTF16bad_2',-1.1,0.247,5,'halpha','','',0)
-    
-    excel('iPTF13ehe_2',-3.2,0.33,25,'halpha','','',600)#Ignore
-    
-    excel('2018bsz',1.2,0.026665,1,'halpha','','',0)
-    
-    #plt.legend()
-    plt.show()
-    """
-    
+    x,y = spectra_plot('NTT_20190725_6',0,'none','no')
+    a = np.where((x<7600) & (x>6000))
+    x = x[a]
+    y = y[a]
+    y = moving_average(3,y)
+    T = plotter(x,y,0,phot0701,'',0,'2019/07/25','black',0.044)
 
+    x,y = spectra_plot('Extended_background/NTT_20190822',0,'none','no')
+    a = np.where((x<7600) & (x>6000))
+    x = x[a]
+    y = y[a]
+    y = moving_average(5,y)
+    T = plotter(x,y,0.5,phot0701,'',0,'2019/08/22','black',0.044)
     
-   
+    
+    x,y = spectra_plot('NTT_20191127_2',0,'none','no')
+    a = np.where((x<7600) & (x>6000))
+    x = x[a]
+    y = y[a]
+    y = moving_average(3,y)
+    T = plotter(x,y,0,[],'',0,'2019/11/27','black',0.044)
     plt.show()
         
