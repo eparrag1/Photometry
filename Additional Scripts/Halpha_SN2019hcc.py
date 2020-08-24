@@ -295,7 +295,7 @@ def analysis(x,y,phot,mask1,mask2,line,custom,xmin,xmax,z = 0.044,rv = 3.1,av = 
     
     
     
-def plotter(x,y,add,phot,crop,crop_no,label,color,z,rv = 3.1,av = 0.19):
+def plotter(ax,x,y,add,phot,crop,crop_no,label,color,z,rv = 3.1,av = 0.19):
     ebv = av/rv
     new = cardelli(x,av,rv)
     x = x/(1+z)
@@ -325,29 +325,31 @@ def plotter(x,y,add,phot,crop,crop_no,label,color,z,rv = 3.1,av = 0.19):
     
     if color == 'black':
         logged_y = moving_average(2,logged_y)
-        plt.plot(x,logged_y + add, label = label, color = 'black', linewidth = 1)
+        ax.plot(x,logged_y + add, label = label, color = 'black', linewidth = 1)
     if color != 'black':
         if color == '':
-            plt.plot(x,logged_y + add, linewidth = 1,label=label)
+            ax.plot(x,logged_y + add, linewidth = 1,label=label)
         else:
-            plt.plot(x,logged_y + add, color = color, linewidth = 1.5,label=label)
-    plt.xlabel('Wavelength (Angstroms)')
-    plt.ylabel('2.5*Log(flux) + constant')
-    plt.xlim(2500,9500)
-    plt.yticks([])
-    plt.xlim(3000,7000)
+            ax.plot(x,logged_y + add, color = color, linewidth = 1.5,label=label)
+    ax.set_xlabel('Wavelength (Angstroms)')
+    ax.set_ylabel('2.5*Log(flux) + constant')
+    #ax.xlim(2500,9500)
+    ax.set_yticks([])
+    #ax.xlim(3000,7000)
     #plt.ylim(-80,-40)
     #plt.legend()
     #plt.show()
 
     return(T)
 
+f, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize = (3,20),gridspec_kw={'height_ratios': [2, 3]})
+
 
 if __name__ == '__main__':
     
  
     
-    plt.figure('H-alpha blueward peak?')
+    #plt.figure('H-beta blueward peak?')
     
     data = np.genfromtxt('/Users/eleonoraparrag/Documents/Spectroscopy/2019hcc_20190621_SOAR.txt', dtype=None)
     x =  data[:,0]
@@ -355,42 +357,36 @@ if __name__ == '__main__':
     a = np.where((x<5300) & (x>4600))
     x = x[a]
     y = y[a]
-    y = moving_average(5,y)
-    T = plotter(x,y,0,phot0621,'',0,'2019/06/21','black',0.044)
+    y = moving_average(1,y)
+    T = plotter(ax1,x,y,0,phot0621,'',0,'2019/06/21','black',0.044)
+    
 
     x,y = spectra_plot('NTT_20190701',0,'none','no')
     a = np.where((x<5300) & (x>4600))
     x = x[a]
     y = y[a]
-    T = plotter(x,y,0,phot0701,'',0,'2019/07/01','black',0.044)
+    T = plotter(ax1,x,y,0,phot0701,'',0,'2019/07/01','black',0.044)
+    
+   
     
     x,y = spectra_plot('NTT_20190725_6',0,'none','no')
     a = np.where((x<5300) & (x>4600))
     x = x[a]
     y = y[a]
-    y = moving_average(3,y)
-    T = plotter(x,y,0,phot0701,'',0,'2019/07/25','black',0.044)
+    y = moving_average(1,y)
+    T = plotter(ax1,x,y,1.5,phot0701,'',0,'2019/07/25','black',0.044)
+    
+    ax1.set_xlim(4600,5050)
+    ax1.set_ylim(-29.5,-27)
+   
 
-    x,y = spectra_plot('Extended_background/NTT_20190822',0,'none','no')
-    a = np.where((x<5300) & (x>4600))
-    x = x[a]
-    y = y[a]
-    y = moving_average(5,y)
-    T = plotter(x,y,0.5,phot0701,'',0,'2019/08/22','black',0.044)
-    
-    
-    x,y = spectra_plot('NTT_20191127_2',0,'none','no')
-    a = np.where((x<5300) & (x>4600))
-    x = x[a]
-    y = y[a]
-    y = moving_average(3,y)
-    T = plotter(x,y,0,[],'',0,'2019/11/27','black',0.044)
-    #plt.legend()
-    plt.show()
+
     
     
     
-    plt.figure('H-beta blueward peak?')
+    #plt.figure('H-alpha blueward peak?')
+    
+   
     
     data = np.genfromtxt('/Users/eleonoraparrag/Documents/Spectroscopy/2019hcc_20190621_SOAR.txt', dtype=None)
     x =  data[:,0]
@@ -398,35 +394,43 @@ if __name__ == '__main__':
     a = np.where((x<7600) & (x>6000))
     x = x[a]
     y = y[a]
-    y = moving_average(5,y)
-    T = plotter(x,y,0,phot0621,'',0,'2019/06/21','black',0.044)
+    y = moving_average(1,y)
+    T = plotter(ax2,x,y,2,phot0621,'',0,'2019/06/21','black',0.044)
 
+    
     x,y = spectra_plot('NTT_20190701',0,'none','no')
     a = np.where((x<7600) & (x>6000))
     x = x[a]
     y = y[a]
-    T = plotter(x,y,0,phot0701,'',0,'2019/07/01','black',0.044)
+    T = plotter(ax2,x,y,1.7,phot0701,'',0,'2019/07/01','black',0.044)
+    
+    
     
     x,y = spectra_plot('NTT_20190725_6',0,'none','no')
     a = np.where((x<7600) & (x>6000))
     x = x[a]
     y = y[a]
-    y = moving_average(3,y)
-    T = plotter(x,y,0,phot0701,'',0,'2019/07/25','black',0.044)
-
+    y = moving_average(1,y)
+    T = plotter(ax2,x,y,2.5,phot0701,'',0,'2019/07/25','black',0.044)
+    
     x,y = spectra_plot('Extended_background/NTT_20190822',0,'none','no')
     a = np.where((x<7600) & (x>6000))
     x = x[a]
     y = y[a]
-    y = moving_average(5,y)
-    T = plotter(x,y,0.5,phot0701,'',0,'2019/08/22','black',0.044)
+    y = moving_average(1,y)
+    T = plotter(ax2,x,y,1.5,phot0701,'',0,'2019/08/22','black',0.044)
+    
     
     
     x,y = spectra_plot('NTT_20191127_2',0,'none','no')
     a = np.where((x<7600) & (x>6000))
     x = x[a]
     y = y[a]
-    y = moving_average(3,y)
-    T = plotter(x,y,0,[],'',0,'2019/11/27','black',0.044)
+    y = moving_average(1,y)
+    T = plotter(ax2,x,y,39,[],'',0,'2019/11/27','black',0.044)
+    
+    ax2.set_xlim(6000,6900)
+    
+    
     plt.show()
         
