@@ -11,7 +11,7 @@ Telescopes.csv contains the colour terms for the telescopes used to take the ima
 
 The filters this code works with are B,V,G,R,I,Z.
 
-To execute the code run the script 'Class_PSF_calc.py'.
+To execute the code run the script 'Sub_PSF_calc.py'.
 
 Run times are dependent on the number of images, but typically less than 5 minutes.
 
@@ -44,7 +44,7 @@ B: 1, V:2, gp:3, ip:4, rp: 5, SDSS-I: 6, SDSS-R: 7, SDSS-Z: 8, SDSS-G: 9
 
 # Custom
 *Catalogues:*
-The catalogues in use 'II/336' for B and V filters, and 'II/349' for griz, from Vizier Pan-STARSS. It is possible that the location of your object is not covered by these catalogues. Currently nothing is implemented to handle this, therefore the workaround would be to refer to the Vizier database for appropriate catalogues and manually replace these in Class_PSF.py.
+The catalogues in use 'II/336' for B and V filters, and 'II/349' for griz, from Vizier Pan-STARSS. It is possible that the location of your object is not covered by these catalogues. Currently nothing is implemented to handle this, therefore the workaround would be to refer to the Vizier database for appropriate catalogues and manually replace these in Sub_PSF.py.
 
 *PSF parameter fine-tuning:*
-The PSF fitting uses a gaussian PSF, the key parameters being the limit (in standard deviations) and the sigma_psf (defining the expected size of the object). The defaults values for both are 3, which in most cases is suitable. Fine-tuning of these parameters and additional logic can be done on a case-by-case basis to potentially improve results, adjustable in the function Return() in Class_PSF.py
+The PSF fitting uses a gaussian PSF, the key parameters being the limit (in standard deviations) and the sigma_psf (defining the expected size of the object). The defaults values for both are 3, which in most cases is suitable. Fine-tuning of these parameters and additional logic can be done on a case-by-case basis to potentially improve results, adjustable in the function Return() in Sub_PSF.py
